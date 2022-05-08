@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" , content="width=600" />
+    <title>Space Invaders</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+
+  <body>
+    <div class="wrap">
+      <header>Space Invaders</header>
+
+      <!-- Game state wrapper: -->
+      <div class="game-wrapper">
+        <div class="game"></div>
+
+        <!-- Game won state: -->
+        <div class="congratulations">
+          <h1>Congratulations!</h1>
+          <h2>You Won the Game!</h2>
+          <button class="btn" onclick="window.location.reload()">
+            Restart
+          </button>
+        </div>
+
+        <!-- Game Lost state  -->
+        <div class="game-over">
+          <h1>Game Lost!</h1>
+          <h2>You lost the game!</h2>
+          <button class="btn" onclick="window.location.reload()">
+            Restart
+          </button>
+        </div>
+      </div>
+
+      <!-- Footer: -->
+      <footer>Left/right keys to move</footer>
+    </div>
+
+    <div id="app"></div>
+
+    <script src="src/index.js"></script>
+  </body>
+</html>
