@@ -12,6 +12,7 @@ const PLAYER_WIDTH = 20;
 const PLAYER_MAX_SPEED = 500;
 
 const LASER_MAX_SPEED = 300;
+const LASER_COOLDOWN = 0.3;
 
 const GAME_STATE = {
   lastTime: Date.now(),
@@ -20,6 +21,7 @@ const GAME_STATE = {
   spacePressed: false,
   playerX: 0,
   playerY: 0,
+  playerCoolDown: 0,
   lasers: []
 };
 
@@ -77,8 +79,14 @@ function updatePlayer(deltaTime, $container) {
   );
 
   // create new laser
-  if (GAME_STATE.spacePressed) {
+  if (GAME_STATE.spacePressed && GAME_STATE.playerCoolDown <= 0) {
     createLaser($container, GAME_STATE.playerX, GAME_STATE.playerY);
+    GAME_STATE.playerCoolDown = LASER_COOLDOWN;
+  }
+
+  // if cooldown value greater than 0, subtract delta time
+  if (GAME_STATE.playerCoolDown > 0) {
+    GAME_STATE.playerCoolDown -= deltaTime;
   }
 
   const $player = document.querySelector(".player");
