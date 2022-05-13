@@ -11,6 +11,8 @@ const GAME_HEIGHT = 600;
 const PLAYER_WIDTH = 20;
 const PLAYER_MAX_SPEED = 500;
 
+const LASER_MAX_SPEED = 300;
+
 const GAME_STATE = {
   lastTime: Date.now(),
   leftPressed: false,
@@ -94,8 +96,20 @@ function createLaser($container, x, y) {
   GAME_STATE.lasers.push(laser);
 
   setPosition($element, x, y);
-  // const audio = new Audio("sound/sfx/laser1.ogg");
-  // audio.play();
+
+  // play audio
+  const audio = new Audio("src/audio/sfx_laser1.ogg");
+  audio.play();
+}
+
+// update the laser objects
+function updateLasers(deltaTime, $container) {
+  const lasers = GAME_STATE.lasers;
+  for (let i = 0; i < lasers.length; i++) {
+    const laser = lasers[i];
+    laser.y -= deltaTime * LASER_MAX_SPEED;
+    setPosition(laser.$element, laser.x, laser.y);
+  }
 }
 
 // The gameloop
@@ -105,6 +119,7 @@ function update() {
 
   const $container = document.querySelector(".game");
   updatePlayer(deltaTime, $container);
+  updateLasers(deltaTime, $container);
 
   GAME_STATE.lastTime = currentTime;
   window.requestAnimationFrame(update);
