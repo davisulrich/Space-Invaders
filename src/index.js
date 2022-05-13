@@ -1,4 +1,6 @@
 // import "./styles.css";
+// Video: https://www.youtube.com/watch?v=wDFim4Ddqeo
+
 const KEY_CODE_LEFT = 37;
 const KEY_CODE_RIGHT = 39;
 const KEY_CODE_SPACE = 32;
@@ -6,14 +8,17 @@ const KEY_CODE_SPACE = 32;
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
 
-const playerWidth = 20;
+const PLAYER_WIDTH = 20;
+const PLAYER_MAX_SPEED = 500;
 
 const GAME_STATE = {
+  lastTime: Date.now(),
   leftPressed: false,
   rightPressed: false,
   spacePressed: false,
   playerX: 0,
-  playerY: 0
+  playerY: 0,
+  lasers: []
 };
 
 // Set position of player or enemy
@@ -25,7 +30,7 @@ function setPosition($el, x, y) {
 function clamp(currPosition, min, max) {
   if (currPosition < min) {
     return min;
-  } else if (currPosition + playerWidth / 2 > max) {
+  } else if (currPosition > max) {
     return max;
   } else {
     return currPosition;
@@ -55,26 +60,53 @@ function init() {
 }
 
 // update player
-function updatePlayer() {
+function updatePlayer(deltaTime, $container) {
   if (GAME_STATE.leftPressed) {
-    GAME_STATE.playerX -= 10;
+    GAME_STATE.playerX -= deltaTime * PLAYER_MAX_SPEED;
   }
   if (GAME_STATE.rightPressed) {
-    GAME_STATE.playerX += 10;
+    GAME_STATE.playerX += deltaTime * PLAYER_MAX_SPEED;
   }
   // Check edges of screen
   GAME_STATE.playerX = clamp(
     GAME_STATE.playerX,
-    playerWidth,
-    GAME_WIDTH - playerWidth
+    PLAYER_WIDTH,
+    GAME_WIDTH - PLAYER_WIDTH
   );
+
+  // create new laser
+  if (GAME_STATE.spacePressed) {
+    createLaser($container, GAME_STATE.playerX, GAME_STATE.playerY);
+  }
 
   const $player = document.querySelector(".player");
   setPosition($player, GAME_STATE.playerX, GAME_STATE.playerY);
 }
+
+// create a laser
+function createLaser($container, x, y) {
+  const $element = document.createElement("img");
+  $element.src = "src/images/laserBlue01.png";
+  $element.className = "laser";
+  $container.appendChild($element);
+
+  const laser = { x, y, $element };
+  GAME_STATE.lasers.push(laser);
+
+  setPosition($element, x, y);
+  // const audio = new Audio("sound/sfx/laser1.ogg");
+  // audio.play();
+}
+
 // The gameloop
 function update() {
-  updatePlayer();
+  const currentTime = Date.now();
+  const deltaTime = (currentTime - GAME_STATE.lastTime) / 1000;
+
+  const $container = document.querySelector(".game");
+  updatePlayer(deltaTime, $container);
+
+  GAME_STATE.lastTime = currentTime;
   window.requestAnimationFrame(update);
 }
 
@@ -105,12 +137,3 @@ init();
 window.addEventListener("keydown", onKeyDown);
 window.addEventListener("keyup", onKeyUp);
 window.requestAnimationFrame(update);
-
-// document.getElementById("app").innerHTML = `
-// <h1>Hello Vanilla!</h1>
-// <div>
-//   We use the same configuration as Parcel to bundle this sandbox, you can find more
-//   info about Parcel
-//   <a href="https://parceljs.org" target="_blank" rel="noopener noreferrer">here</a>.
-// </div>
-// `;
