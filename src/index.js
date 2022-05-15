@@ -1,5 +1,5 @@
 // import "./styles.css";
-// Video: https://www.youtube.com/watch?v=wDFim4Ddqeo
+// Video: https://www.youtube.com/watch?v=ytCWn96h3j4 4.30
 
 const KEY_CODE_LEFT = 37;
 const KEY_CODE_RIGHT = 39;
@@ -12,7 +12,7 @@ const PLAYER_WIDTH = 20;
 const PLAYER_MAX_SPEED = 500;
 
 const LASER_MAX_SPEED = 300;
-const LASER_COOLDOWN = 0.3;
+const LASER_COOLDOWN = 0.2;
 
 const GAME_STATE = {
   lastTime: Date.now(),
@@ -116,8 +116,21 @@ function updateLasers(deltaTime, $container) {
   for (let i = 0; i < lasers.length; i++) {
     const laser = lasers[i];
     laser.y -= deltaTime * LASER_MAX_SPEED;
+
+    if (laser.y < 0) {
+      destroyLaser($container, laser);
+    }
+
     setPosition(laser.$element, laser.x, laser.y);
   }
+
+  GAME_STATE.lasers = GAME_STATE.lasers.filter((e) => !e.isDead);
+}
+
+// when the laser goes off the screen, delete it
+function destroyLaser($container, laser) {
+  $container.removeChild(laser.$element);
+  laser.isDead = true;
 }
 
 // The gameloop
