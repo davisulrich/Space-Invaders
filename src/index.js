@@ -12,7 +12,16 @@ const PLAYER_WIDTH = 20;
 const PLAYER_MAX_SPEED = 500;
 
 const LASER_MAX_SPEED = 300;
+// how long in seconds it takes for laser to shoot again
 const LASER_COOLDOWN = 0.2;
+
+const ENEMIES_PER_ROW = 10;
+// how far from right and left edges of screen to start
+const ENEMY_HORIZONTAL_PADDING = 80;
+// how far from top of screen to start
+const ENEMY_VERTICAL_PADDING = 70;
+// space in between rows of enemies
+const ENEMY_VERTICAL_SPACING = 80;
 
 const GAME_STATE = {
   lastTime: Date.now(),
@@ -61,6 +70,14 @@ function createPlayer($container) {
 function init() {
   const $container = document.querySelector(".game");
   createPlayer($container);
+
+  const enemySpacing =
+    (GAME_WIDTH - ENEMY_HORIZONTAL_PADDING * 2) / (ENEMIES_PER_ROW - 1);
+
+  // for the three rows of enemies,
+  for (let j = 0; j < 3; j++) {
+    const y = ENEMY_VERTICAL_PADDING + j * ENEMY_VERTICAL_SPACING;
+  }
 }
 
 // update player
