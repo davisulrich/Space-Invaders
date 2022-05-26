@@ -1,5 +1,5 @@
 // import "./styles.css";
-// Video: https://www.youtube.com/watch?v=ytCWn96h3j4 4.30
+// Video: https://www.youtube.com/watch?v=IL8BaSKCOVo 3.20
 
 const KEY_CODE_LEFT = 37;
 const KEY_CODE_RIGHT = 39;
@@ -31,12 +31,20 @@ const GAME_STATE = {
   playerX: 0,
   playerY: 0,
   playerCoolDown: 0,
-  lasers: []
+  lasers: [],
+  enemies: []
 };
 
 // Set position of player or enemy
 function setPosition($el, x, y) {
   $el.style.transform = `translate(${x}px, ${y}px)`;
+}
+
+// checks whether two rectangles (objects) intersect
+function rectsIntersect(r1, r2) {
+  return !(
+    r1.left > 
+  )
 }
 
 // Clamps the player from going outside the screen
@@ -77,6 +85,10 @@ function init() {
   // for the three rows of enemies,
   for (let j = 0; j < 3; j++) {
     const y = ENEMY_VERTICAL_PADDING + j * ENEMY_VERTICAL_SPACING;
+    for (let i = 0; i < ENEMIES_PER_ROW; i++) {
+      const x = i * enemySpacing + ENEMY_HORIZONTAL_PADDING;
+      createEnemy($container, x, y);
+    }
   }
 }
 
@@ -150,6 +162,35 @@ function destroyLaser($container, laser) {
   laser.isDead = true;
 }
 
+// create enemy object at specified x and y
+function createEnemy($container, x, y) {
+  const $element = document.createElement("img");
+  $element.src = "src/images/enemyRed4.png";
+  $element.className = "enemy";
+  $container.appendChild($element);
+  const enemy = {
+    x,
+    y,
+    $element
+  };
+  GAME_STATE.enemies.push(enemy);
+  setPosition($element, x, y);
+}
+
+// update the enemies
+function updateEnemies(deltaTime, $container) {
+  const dx = Math.sin(GAME_STATE.lastTime / 1000.0) * 50;
+  const dy = Math.cos(GAME_STATE.lastTime / 1000.0) * 10;
+
+  const enemies = GAME_STATE.enemies;
+  for (let i = 0; i < enemies.length; i++) {
+    const enemy = enemies[i];
+    const x = enemy.x + dx;
+    const y = enemy.y + dy;
+    setPosition(enemy.$element, x, y);
+  }
+}
+
 // The gameloop
 function update() {
   const currentTime = Date.now();
@@ -158,6 +199,7 @@ function update() {
   const $container = document.querySelector(".game");
   updatePlayer(deltaTime, $container);
   updateLasers(deltaTime, $container);
+  updateEnemies(deltaTime, $container);
 
   GAME_STATE.lastTime = currentTime;
   window.requestAnimationFrame(update);
