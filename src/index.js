@@ -1,5 +1,5 @@
 // import "./styles.css";
-// Video: https://www.youtube.com/watch?v=IL8BaSKCOVo 3.20
+// Video: https://www.youtube.com/watch?v=IL8BaSKCOVo 5.33
 
 const KEY_CODE_LEFT = 37;
 const KEY_CODE_RIGHT = 39;
@@ -43,8 +43,11 @@ function setPosition($el, x, y) {
 // checks whether two rectangles (objects) intersect
 function rectsIntersect(r1, r2) {
   return !(
-    r1.left > 
-  )
+    r2.left > r1.right ||
+    r1.left > r2.right ||
+    r2.top > r1.bottom ||
+    r1.top > r2.bottom
+  );
 }
 
 // Clamps the player from going outside the screen
@@ -146,11 +149,26 @@ function updateLasers(deltaTime, $container) {
     const laser = lasers[i];
     laser.y -= deltaTime * LASER_MAX_SPEED;
 
+    // laser off the screen
     if (laser.y < 0) {
       destroyLaser($container, laser);
     }
 
     setPosition(laser.$element, laser.x, laser.y);
+    const r1 = laser.$element.getBoundingClientRect();
+    const enemies = GAME_STATE.enemies;
+    for (let j = 0; j < enemies.length; j++) {
+      const enemy = enemies[j];
+      if (enemy.isDead) continue;
+      const r2 = enemy.$element.getBoundingClientRect();
+
+      // if the enemy and the laser intersect
+      if (rectsIntersect(r1, r2)) {
+        destroyEnemy($container, enemy);
+        destroyLaser($container, laser);
+        break;
+      }
+    }
   }
 
   GAME_STATE.lasers = GAME_STATE.lasers.filter((e) => !e.isDead);
@@ -189,6 +207,13 @@ function updateEnemies(deltaTime, $container) {
     const y = enemy.y + dy;
     setPosition(enemy.$element, x, y);
   }
+  GAME_STATE.enemies = GAME_STATE.enemies.filter((e) => !e.isDead);
+}
+
+// when anenemy gets shot, kill it
+function destroyEnemy($container, enemy) {
+  $container.removeChild(enemy.$element);
+  enemy.isDead = true;
 }
 
 // The gameloop
